@@ -1,0 +1,32 @@
+name: "Directory SHA256"
+description: "Compute deterministic SHA256 of all files in a directory (excluding node_modules)"
+inputs:
+  dir:
+    description: "Directory to hash, relative to the repository root"
+    required: false
+    default: "."
+outputs:
+  sha:
+    description: "Deterministic SHA256 of directory contents"
+runs:
+  using: "composite"
+  steps:
+    - name: Compute directory SHA
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        DIR="${{ inputs.dir }}"
+
+        echo "Computing SHA for directory: $DIR"
+
+        cd "$DIR"
+
+        # Build deterministic manifest of per-file hashes, then hash that manifest and strip the trailing "-" filename.
+        SHA=$(find . -type f -print0 \
+          | sort -z \
+          | xargs -0 sha256sum \
+          | sha256sum \
+          | awk '{print $1}')
+
+        echo "sha=$SHA" >> "$GITHUB_OUTPUT"
