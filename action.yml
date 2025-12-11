@@ -8,11 +8,13 @@ inputs:
 outputs:
   sha:
     description: "Deterministic SHA256 of directory contents"
+    value: ${{ steps.compute-sha.outputs.sha }}
 runs:
   using: "composite"
   steps:
     - name: Compute directory SHA
       shell: bash
+      id: compute-sha
       run: |
         set -euo pipefail
 
