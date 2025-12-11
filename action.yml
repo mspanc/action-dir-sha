@@ -29,4 +29,5 @@ runs:
           | sha256sum \
           | awk '{print $1}')
 
+        echo "Computed SHA: $SHA"
         echo "sha=$SHA" >> "$GITHUB_OUTPUT"
